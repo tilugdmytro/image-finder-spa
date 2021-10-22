@@ -1,9 +1,9 @@
 import PropTypes from "prop-types";
-// import s from "./Button.module.css";
+import s from "./Button.module.css";
 
 const Button = ({ handleLoadMore }) => {
   return (
-    <button type="button" className="button" onClick={handleLoadMore}>
+    <button type="button" className={s.button} onClick={handleLoadMore}>
       Load more
     </button>
   );

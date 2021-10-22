@@ -1,0 +1,21 @@
+.button {
+  width: 100%;
+  background-color: lightgray;
+  border: none;
+  border-radius: 5px;
+  color: dimgray;
+  font-weight: bold;
+  margin: 15px 0;
+  padding: 15px 32px;
+  cursor: pointer;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+}
+
+.button:hover {
+  background-color: white;
+  transition-duration: 0.3s;
+  border: solid 2px;
+}

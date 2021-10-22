@@ -2,9 +2,11 @@ import React, { Component } from "react";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "react-loader-spinner/dist/loader/css/react-spinner-loader.css";
+import s from "./Searchbar/Searchbar.module.css";
 import Loader from "react-loader-spinner";
 import Searchbar from "./Searchbar/Searchbar";
 import ImageGallery from "./ImageGallery/ImageGallery";
+import Modal from "./Modal/Modal";
 import Button from "./Button/Button";
 import imageAPI from "../services/image-api";
 
@@ -16,6 +18,7 @@ class App extends Component {
     error: null,
     showModal: false,
     largeImg: "",
+    tags: "",
     status: "idle",
   };
 
@@ -73,8 +76,7 @@ class App extends Component {
   };
 
   handleLargeImage = (event) => {
-    const imgForModal = event.currentTarget.alt;
-    this.setState({ showModal: true, largeImg: imgForModal });
+    this.setState({ showModal: true, largeImg: event.currentTarget.alt });
   };
 
   toggleModal = () => {
@@ -82,14 +84,14 @@ class App extends Component {
   };
 
   render() {
-    const { data, status, query } = this.state;
+    const { data, status, query, showModal } = this.state;
 
     if (status === "idle") {
       return (
         <>
           <Searchbar onSubmit={this.handleSubmit} />
           <ToastContainer />
-          <h1>Введите запрос</h1>
+          <h1 className={s.SearchbarTitle}>Введите запрос</h1>
         </>
       );
     }
@@ -117,7 +119,14 @@ class App extends Component {
           <Searchbar onSubmit={this.handleSubmit} />
           <ImageGallery data={data} handleLargeImage={this.handleLargeImage} />
           {data.length !== 0 && <Button handleLoadMore={this.handleLoadMore} />}
-          {data.length === 0 && <h2>По запросу "{query}" ничего не найдено</h2>}
+          {data.length === 0 && (
+            <h2 className={s.SearchbarTitle}>
+              По запросу "{query}" ничего не найдено
+            </h2>
+          )}
+          {showModal && (
+            <Modal largeImg={this.state.largeImg} onClose={this.toggleModal} />
+          )}
           <ToastContainer />
         </div>
       );

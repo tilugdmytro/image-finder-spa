@@ -1,12 +1,12 @@
 import PropTypes from "prop-types";
-// import s from "./ImageGallery.module.css";
+import s from "./ImageGallery.module.css";
 import ImageGalleryItem from "../ImageGalleryItem/ImageGalleryItem";
 
 const ImageGallery = ({ data, handleLargeImage }) => {
   return (
-    <ul className="ImageGallery">
+    <ul className={s.ImageGallery}>
       {data.map(({ id, webformatURL, largeImageURL }) => (
-        <li key={id} className="ImageGalleryItem">
+        <li key={id} className={s.ImageGalleryItem}>
           <ImageGalleryItem
             webformatURL={webformatURL}
             largeImageURL={largeImageURL}
