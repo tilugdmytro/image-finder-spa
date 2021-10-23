@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { ToastContainer } from "react-toastify";
+import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "react-loader-spinner/dist/loader/css/react-spinner-loader.css";
 import s from "./Searchbar/Searchbar.module.css";
@@ -18,7 +18,6 @@ class App extends Component {
     error: null,
     showModal: false,
     largeImg: "",
-    tags: "",
     status: "idle",
   };
 
@@ -33,9 +32,11 @@ class App extends Component {
     const prevPage = prevState.page;
     const nextPage = this.state.page;
 
-    if (prevQuery !== nextQuery || prevPage !== nextPage) {
+    if (prevQuery !== nextQuery) {
       this.setState({ status: "pending" });
+    }
 
+    if (prevQuery !== nextQuery || prevPage !== nextPage) {
       imageAPI
         .fetchImage(nextQuery, nextPage)
         .then(({ hits }) => {
@@ -70,6 +71,13 @@ class App extends Component {
   };
 
   handleLoadMore = () => {
+    //////// нужно доработать ошибку по totalHits /////////
+
+    if (this.state.data.length === this.state.totalHits) {
+      toast.error("Изображений больше нет");
+      return;
+    }
+
     this.setState(({ page }) => ({
       page: page + 1,
     }));
