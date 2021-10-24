@@ -1,14 +1,13 @@
 import React, { Component } from "react";
-import { ToastContainer, toast } from "react-toastify";
+import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import "react-loader-spinner/dist/loader/css/react-spinner-loader.css";
 import s from "./Searchbar/Searchbar.module.css";
-import Loader from "react-loader-spinner";
 import Searchbar from "./Searchbar/Searchbar";
 import ImageGallery from "./ImageGallery/ImageGallery";
 import Modal from "./Modal/Modal";
 import Button from "./Button/Button";
 import imageAPI from "../services/image-api";
+import Spinner from "./Spinner/Spinner";
 
 class App extends Component {
   state = {
@@ -32,11 +31,8 @@ class App extends Component {
     const prevPage = prevState.page;
     const nextPage = this.state.page;
 
-    if (prevQuery !== nextQuery) {
+    if (prevPage !== nextPage || prevQuery !== nextQuery) {
       this.setState({ status: "pending" });
-    }
-
-    if (prevQuery !== nextQuery || prevPage !== nextPage) {
       imageAPI
         .fetchImage(nextQuery, nextPage)
         .then(({ hits }) => {
@@ -71,13 +67,6 @@ class App extends Component {
   };
 
   handleLoadMore = () => {
-    //////// нужно доработать ошибку по totalHits /////////
-
-    if (this.state.data.length === this.state.totalHits) {
-      toast.error("Изображений больше нет");
-      return;
-    }
-
     this.setState(({ page }) => ({
       page: page + 1,
     }));
@@ -92,53 +81,39 @@ class App extends Component {
   };
 
   render() {
-    const { data, status, query, showModal } = this.state;
+    const { data, status, showModal, query } = this.state;
 
-    if (status === "idle") {
-      return (
-        <>
-          <Searchbar onSubmit={this.handleSubmit} />
-          <ToastContainer />
+    return (
+      <div className="App">
+        <Searchbar onSubmit={this.handleSubmit} />
+
+        {status === "idle" && (
           <h1 className={s.SearchbarTitle}>Введите запрос</h1>
-        </>
-      );
-    }
+        )}
 
-    if (status === "pending") {
-      return (
-        <Loader
-          type="TailSpin"
-          color="#00BFFF"
-          height={80}
-          width={80}
-          timeout={3000}
-          style={{ textAlign: "center" }}
-        />
-      );
-    }
-
-    // if (status === "rejected") {
-    //   return <h2>{error.message}</h2>;
-    // }
-
-    if (status === "resolved") {
-      return (
-        <div className="container">
-          <Searchbar onSubmit={this.handleSubmit} />
+        {data.length > 0 && (
           <ImageGallery data={data} handleLargeImage={this.handleLargeImage} />
-          {data.length !== 0 && <Button handleLoadMore={this.handleLoadMore} />}
-          {data.length === 0 && (
-            <h2 className={s.SearchbarTitle}>
-              По запросу "{query}" ничего не найдено
-            </h2>
-          )}
-          {showModal && (
-            <Modal largeImg={this.state.largeImg} onClose={this.toggleModal} />
-          )}
-          <ToastContainer />
-        </div>
-      );
-    }
+        )}
+
+        {data.length >= 12 && status === "resolved" && (
+          <Button handleLoadMore={this.handleLoadMore} />
+        )}
+
+        {data.length === 0 && status === "resolved" && (
+          <h2 className={s.SearchbarTitle}>
+            По запросу "{query}" ничего не найдено
+          </h2>
+        )}
+
+        {showModal && (
+          <Modal largeImg={this.state.largeImg} onClose={this.toggleModal} />
+        )}
+
+        {status === "pending" && <Spinner />}
+
+        <ToastContainer autoClose={3000} />
+      </div>
+    );
   }
 }
 
